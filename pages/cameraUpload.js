@@ -12,24 +12,23 @@ const styles = StyleSheet.create({
 
 export default class CameraUpload extends Component {
 
-  uploadImage = (uri) => {
-    RNFetchBlob.fetch(
-      'POST',
-      'https://your-server-url.com/upload-image',
-      {
-        'Content-Type': 'multipart/form-data',
-      },
-      [
-        {
-          name: 'photo',
-          filename: 'photo.jpg',
-          data: RNFetchBlob.wrap(uri),
-        },
-      ]
-    )
-      .then((res) => res.json())
+  uploadImage = (file) => {
+    const formData = new FormData();
+    formData.append('image', {
+      uri: file.uri,
+      type: file.type,
+      name: file.fileName
+    });
+    fetch('http://10.0.2.2:9998/upload', {
+      method: 'post',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then((res) => res.json())
       .then((response) => {
         console.log('Upload Success:', response);
+        this.handleNavigate()
       })
       .catch((error) => {
         console.log('Upload Error:', error);
@@ -69,18 +68,25 @@ export default class CameraUpload extends Component {
     };
 
     launchCamera(options, (response) => {
-      debugger;
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else {
-        // uploadImage(response.uri);
         console.log('response', response)
+        const [file] = response.assets
+        this.uploadImage(file)
       }
     });
   };
 
+  handleNavigate = () => {
+    const {navigation, route} = this.props
+    navigation.navigate('imageList');
+    const { getImages } = route.params;
+    getImages && getImages();
+
+  }
 
   render() {
     return (
