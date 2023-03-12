@@ -81,9 +81,10 @@ export default class CameraUpload extends Component {
   };
 
   handleNavigate = () => {
-    const {navigation, route} = this.props
+    const { navigation, route } = this.props
+    const { params = {} } = route
     navigation.navigate('imageList');
-    const { getImages } = route.params;
+    const { getImages } = params;
     getImages && getImages();
 
   }

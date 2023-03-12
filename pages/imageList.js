@@ -51,6 +51,7 @@ export default class ImageList extends Component {
 
   render() {
     const { imageList, loading } = this.state;
+    console.log('props', this.props)
     return (
       loading ? <ActivityIndicator /> :
         <Swiper style={styles.wrapper} showsButtons={true}>
